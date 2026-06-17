@@ -13,6 +13,36 @@ pub struct Settings {
     #[serde(rename = "recordingMode")]
     pub recording_mode: String,
     pub hotkey: String,
+    #[serde(rename = "onboardingDone", default)]
+    pub onboarding_done: bool,
+    #[serde(rename = "ttsEnabled", default)]
+    pub tts_enabled: bool,
+    #[serde(rename = "ttsEngine", default = "default_tts_engine")]
+    pub tts_engine: String,
+    #[serde(rename = "ttsHotkey", default = "default_tts_hotkey")]
+    pub tts_hotkey: String,
+    /// Last-selected voice per engine. Local (OS) and cloud (Orpheus) use
+    /// disjoint voice-id namespaces, so a single shared field would be
+    /// clobbered every time the user switches engines. Persisting one per
+    /// engine lets each remember its own selection across restarts.
+    #[serde(rename = "ttsVoiceLocal", default)]
+    pub tts_voice_local: String,
+    #[serde(rename = "ttsVoiceCloud", default)]
+    pub tts_voice_cloud: String,
+    #[serde(rename = "ttsRate", default = "default_tts_rate")]
+    pub tts_rate: u32,
+}
+
+fn default_tts_engine() -> String {
+    "local".to_string()
+}
+
+fn default_tts_hotkey() -> String {
+    "CmdOrCtrl+Shift+R".to_string()
+}
+
+fn default_tts_rate() -> u32 {
+    175
 }
 
 impl Default for Settings {
@@ -24,11 +54,27 @@ impl Default for Settings {
             groq_api_key: String::new(),
             recording_mode: "toggle".to_string(),
             hotkey: "CmdOrCtrl+Shift+Space".to_string(),
+            onboarding_done: false,
+            tts_enabled: false,
+            tts_engine: default_tts_engine(),
+            tts_hotkey: default_tts_hotkey(),
+            tts_voice_local: String::new(),
+            tts_voice_cloud: String::new(),
+            tts_rate: default_tts_rate(),
         }
     }
 }
 
 impl Settings {
+    /// The voice id to use for the currently selected TTS engine. Local and
+    /// cloud voices live in separate namespaces, so each is stored separately.
+    pub fn tts_voice_for_engine(&self) -> &str {
+        match self.tts_engine.as_str() {
+            "cloud" => &self.tts_voice_cloud,
+            _ => &self.tts_voice_local,
+        }
+    }
+
     pub fn config_path(app_dir: &PathBuf) -> PathBuf {
         app_dir.join("config.json")
     }
@@ -63,6 +109,25 @@ mod tests {
         assert_eq!(settings.groq_api_key, "");
         assert_eq!(settings.recording_mode, "toggle");
         assert_eq!(settings.hotkey, "CmdOrCtrl+Shift+Space");
+        assert!(!settings.tts_enabled);
+        assert_eq!(settings.tts_engine, "local");
+        assert_eq!(settings.tts_hotkey, "CmdOrCtrl+Shift+R");
+        assert_eq!(settings.tts_voice_local, "");
+        assert_eq!(settings.tts_voice_cloud, "");
+        assert_eq!(settings.tts_rate, 175);
+    }
+
+    #[test]
+    fn tts_voice_for_engine_picks_per_engine_field() {
+        let mut settings = Settings::default();
+        settings.tts_voice_local = "Microsoft David".to_string();
+        settings.tts_voice_cloud = "diana".to_string();
+
+        settings.tts_engine = "local".to_string();
+        assert_eq!(settings.tts_voice_for_engine(), "Microsoft David");
+
+        settings.tts_engine = "cloud".to_string();
+        assert_eq!(settings.tts_voice_for_engine(), "diana");
     }
 
     #[test]

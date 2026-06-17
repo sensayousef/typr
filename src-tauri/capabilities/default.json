@@ -5,16 +5,10 @@
   "permissions": [
     "core:default",
     "core:window:allow-start-dragging",
-    "global-shortcut:default",
-    {
-      "identifier": "shell:allow-execute",
-      "allow": [
-        {
-          "name": "binaries/whisper-cpp",
-          "sidecar": true,
-          "args": true
-        }
-      ]
-    }
+    "core:window:allow-minimize",
+    "core:window:allow-toggle-maximize",
+    "core:window:allow-is-maximized",
+    "core:window:allow-close",
+    "global-shortcut:default"
   ]
 }

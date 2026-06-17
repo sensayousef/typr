@@ -10,8 +10,96 @@
     <link rel="stylesheet" href="/src/style.css" />
   </head>
   <body>
+    <!-- ── Onboarding wizard ──────────────────────────────── -->
+    <div id="onboarding" class="hidden">
+      <div id="onboarding-card">
+        <div id="onboarding-steps">
+
+          <div class="ob-step active" data-step="0">
+            <div class="ob-icon">🎙️</div>
+            <h2 class="ob-title">Welcome to Typr</h2>
+            <p class="ob-desc">Dictate anywhere — Typr transcribes your voice and types it for you. Let's get you set up in 3 quick steps.</p>
+          </div>
+
+          <div class="ob-step" data-step="1">
+            <h2 class="ob-title">Choose your microphone</h2>
+            <p class="ob-desc">Select the mic you'll be speaking into.</p>
+            <select id="ob-mic-select" class="ob-select"></select>
+          </div>
+
+          <div class="ob-step" data-step="2">
+            <h2 class="ob-title">Set a hotkey</h2>
+            <p class="ob-desc">Press any key combination to use as your recording shortcut.</p>
+            <button id="ob-hotkey-btn" class="ob-hotkey-btn">
+              <kbd id="ob-hotkey-text">Ctrl+Shift+Space</kbd>
+            </button>
+            <p class="ob-hotkey-hint">Click the button above and press your desired shortcut</p>
+          </div>
+
+          <div class="ob-step" data-step="3">
+            <h2 class="ob-title">Choose transcription engine</h2>
+            <p class="ob-desc">Local runs on your device (requires a model download). Cloud uses Groq — fast and no setup needed.</p>
+            <div class="ob-engine-group">
+              <button id="ob-engine-local" class="ob-engine-btn active">
+                <span class="ob-engine-label">Local Whisper</span>
+                <span class="ob-engine-hint">Private, works offline</span>
+              </button>
+              <button id="ob-engine-cloud" class="ob-engine-btn">
+                <span class="ob-engine-label">Groq Cloud</span>
+                <span class="ob-engine-hint">Fast, needs API key</span>
+              </button>
+            </div>
+            <input type="password" id="ob-groq-key" class="ob-input hidden" placeholder="Enter your Groq API key (gsk_...)" />
+          </div>
+
+          <div class="ob-step" data-step="4">
+            <div class="ob-icon">✅</div>
+            <h2 class="ob-title">You're all set!</h2>
+            <p class="ob-desc">Press <kbd id="ob-final-hotkey">Ctrl+Shift+Space</kbd> anywhere to start recording. Typr will type the transcription for you.</p>
+          </div>
+
+        </div>
+
+        <div id="onboarding-footer">
+          <div id="ob-dots">
+            <span class="ob-dot active"></span>
+            <span class="ob-dot"></span>
+            <span class="ob-dot"></span>
+            <span class="ob-dot"></span>
+            <span class="ob-dot"></span>
+          </div>
+          <div id="ob-actions">
+            <button id="ob-skip" class="btn-ghost-sm">Skip setup</button>
+            <button id="ob-next" class="btn-primary-sm">Get started →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div id="app">
-      <div id="titlebar" data-tauri-drag-region></div>
+      <div id="titlebar" data-tauri-drag-region>
+        <div id="window-controls">
+          <button id="win-minimize" class="win-btn" title="Minimize" aria-label="Minimize">
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+              <path d="M0 5h10" stroke="currentColor" stroke-width="1"/>
+            </svg>
+          </button>
+          <button id="win-maximize" class="win-btn" title="Maximize" aria-label="Maximize">
+            <svg class="icon-maximize" width="10" height="10" viewBox="0 0 10 10" fill="none">
+              <rect x="0.5" y="0.5" width="9" height="9" stroke="currentColor" stroke-width="1"/>
+            </svg>
+            <svg class="icon-restore" width="10" height="10" viewBox="0 0 10 10" fill="none">
+              <rect x="0.5" y="2.5" width="7" height="7" stroke="currentColor" stroke-width="1"/>
+              <path d="M2.5 2.5v-2h7v7h-2" stroke="currentColor" stroke-width="1"/>
+            </svg>
+          </button>
+          <button id="win-close" class="win-btn win-btn-close" title="Close" aria-label="Close">
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+              <path d="M1 1l8 8M9 1l-8 8" stroke="currentColor" stroke-width="1"/>
+            </svg>
+          </button>
+        </div>
+      </div>
       <div id="app-body">
       <aside id="sidebar">
         <div class="sidebar-header">
@@ -48,6 +136,19 @@
             </svg>
             Recording
           </a>
+          <a class="nav-item" data-section="tts">
+            <svg class="nav-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M3 5.5h4l3-3v11l-3-3H3V5.5z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>
+              <path d="M11 5.5a3 3 0 010 5M12.5 3.5a5.5 5.5 0 010 9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+            </svg>
+            Read Aloud
+          </a>
+          <a class="nav-item" data-section="history">
+            <svg class="nav-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M3 3h10M3 6.5h10M3 10h7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+            </svg>
+            History
+          </a>
         </nav>
         <div class="sidebar-footer">
           <span class="version-text">v0.1.0</span>
@@ -68,6 +169,18 @@
               </div>
               <div class="setting-control">
                 <select id="mic-select"></select>
+              </div>
+            </div>
+            <div class="setting-row">
+              <div class="setting-label">
+                <span class="label-text">Launch on Startup</span>
+                <span class="label-hint">Start Typr automatically when you log in</span>
+              </div>
+              <div class="setting-control">
+                <label class="switch">
+                  <input type="checkbox" id="autostart-toggle" />
+                  <span class="switch-track"></span>
+                </label>
               </div>
             </div>
           </div>
@@ -142,13 +255,110 @@
             <div class="setting-row">
               <div class="setting-label">
                 <span class="label-text">Hotkey</span>
-                <span class="label-hint">Global keyboard shortcut to trigger recording</span>
+                <span class="label-hint">Click to change the global shortcut</span>
               </div>
               <div class="setting-control">
-                <kbd id="hotkey-text">Cmd+Shift+D</kbd>
+                <button id="hotkey-btn" class="hotkey-btn" title="Click to change">
+                  <kbd id="hotkey-text">Ctrl+Shift+Space</kbd>
+                </button>
               </div>
             </div>
           </div>
+        </section>
+        <section id="section-tts" class="content-section">
+          <div class="section-header">
+            <h2 class="section-title">Read Aloud</h2>
+            <p class="section-desc">Highlight text and press the hotkey to have it read aloud</p>
+          </div>
+          <div class="settings-list">
+            <div class="setting-row">
+              <div class="setting-label">
+                <span class="label-text">Enable Read Aloud</span>
+                <span class="label-hint">Activate the text-to-speech hotkey</span>
+              </div>
+              <div class="setting-control">
+                <label class="switch">
+                  <input type="checkbox" id="tts-enable" />
+                  <span class="switch-track"></span>
+                </label>
+              </div>
+            </div>
+            <div id="tts-panel-body">
+              <div class="setting-row">
+                <div class="setting-label">
+                  <span class="label-text">TTS Engine</span>
+                  <span class="label-hint">Local uses system voices (free/offline), Cloud uses Groq PlayAI</span>
+                </div>
+                <div class="setting-control">
+                  <div class="toggle-group">
+                    <button id="tts-engine-local" class="toggle-btn active">Local</button>
+                    <button id="tts-engine-cloud" class="toggle-btn">Groq Cloud</button>
+                  </div>
+                </div>
+              </div>
+              <div class="setting-row">
+                <div class="setting-label">
+                  <span class="label-text">Voice</span>
+                  <span class="label-hint">Select a voice for speech output</span>
+                </div>
+                <div class="setting-control">
+                  <select id="tts-voice-select"></select>
+                </div>
+              </div>
+              <div class="setting-row">
+                <div class="setting-label">
+                  <span class="label-text">Speed</span>
+                  <span class="label-hint">Approximate words per minute</span>
+                </div>
+                <div class="setting-control tts-rate-control">
+                  <input type="range" id="tts-rate" min="80" max="400" step="5" value="175" />
+                  <span id="tts-rate-label" class="rate-label">175 WPM</span>
+                </div>
+              </div>
+              <div class="setting-row">
+                <div class="setting-label">
+                  <span class="label-text">Hotkey</span>
+                  <span class="label-hint">Click to change the read-aloud shortcut</span>
+                </div>
+                <div class="setting-control">
+                  <button id="tts-hotkey-btn" class="hotkey-btn" title="Click to change">
+                    <kbd id="tts-hotkey-text">Ctrl+Shift+R</kbd>
+                  </button>
+                </div>
+              </div>
+              <div class="setting-row">
+                <div class="setting-label">
+                  <span class="label-text">Test Voice</span>
+                  <span class="label-hint">Preview current voice and speed</span>
+                </div>
+                <div class="setting-control">
+                  <button id="tts-test-btn" class="btn-primary">Test</button>
+                </div>
+              </div>
+              <div class="setting-row hidden" id="tts-playback-row">
+                <div class="setting-label">
+                  <span class="label-text">Playback</span>
+                  <span class="label-hint" id="tts-playback-hint">Reading selection aloud&hellip;</span>
+                </div>
+                <div class="setting-control tts-playback-controls">
+                  <button id="tts-pause-btn" class="btn-secondary hidden">Pause</button>
+                  <button id="tts-resume-btn" class="btn-secondary hidden">Resume</button>
+                  <button id="tts-stop-btn" class="btn-secondary">Stop</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section id="section-history" class="content-section">
+          <div class="section-header">
+            <h2 class="section-title">History</h2>
+            <p class="section-desc">Recent transcriptions — click any entry to copy</p>
+          </div>
+          <div id="history-toolbar">
+            <button id="history-clear-btn" class="btn-ghost">Clear all</button>
+          </div>
+          <div id="history-list"></div>
+          <p id="history-empty" class="history-empty hidden">No transcriptions yet. Start recording to see your history here.</p>
         </section>
       </main>
       </div>

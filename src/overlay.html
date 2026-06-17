@@ -3,6 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <style>
+      :root {
+        --level: 0;
+      }
       * { margin: 0; padding: 0; }
       html, body {
         background: transparent;
@@ -27,18 +30,22 @@
         backdrop-filter: blur(10px);
         -webkit-backdrop-filter: blur(10px);
         border: 1px solid rgba(255, 255, 255, 0.1);
-        transition: all 0.3s ease;
+        transition: background 0.3s ease, border-color 0.3s ease;
+        position: relative;
       }
       .mic svg {
         width: 18px;
         height: 18px;
         fill: #888;
         transition: fill 0.3s ease;
+        position: relative;
+        z-index: 1;
       }
       .mic.recording {
         background: rgba(244, 67, 54, 0.9);
         border-color: rgba(244, 67, 54, 0.5);
-        animation: pulse 1.2s ease-in-out infinite;
+        box-shadow:
+          0 0 calc(6px + var(--level) * 20px) rgba(244, 67, 54, calc(0.4 + var(--level) * 0.5));
       }
       .mic.recording svg {
         fill: #fff;
@@ -50,6 +57,47 @@
       }
       .mic.transcribing svg {
         fill: #fff;
+      }
+      .mic.loading {
+        background: rgba(33, 150, 243, 0.55);
+        border-color: rgba(33, 150, 243, 0.4);
+        animation: pulse 0.7s ease-in-out infinite;
+      }
+      .mic.loading svg {
+        fill: #fff;
+      }
+      .mic.speaking {
+        background: rgba(33, 150, 243, 0.9);
+        border-color: rgba(33, 150, 243, 0.5);
+        animation: pulse 1.2s ease-in-out infinite;
+      }
+      .mic.speaking svg {
+        fill: #fff;
+      }
+      .mic.paused {
+        background: rgba(33, 150, 243, 0.9);
+        border-color: rgba(33, 150, 243, 0.5);
+      }
+      .mic.paused svg {
+        fill: #fff;
+        opacity: 0.6;
+      }
+      .mic.loading,
+      .mic.speaking,
+      .mic.paused {
+        cursor: pointer;
+      }
+      .mic.error {
+        background: rgba(244, 67, 54, 0.9);
+        border-color: rgba(244, 67, 54, 0.6);
+        animation: errorFlash 0.5s ease-in-out 3;
+      }
+      .mic.error svg {
+        fill: #fff;
+      }
+      @keyframes errorFlash {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.4; }
       }
       @keyframes pulse {
         0%, 100% { transform: scale(1); opacity: 1; }
@@ -64,5 +112,7 @@
         <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
       </svg>
     </div>
+
+    <script type="module" src="./overlay.ts"></script>
   </body>
 </html>

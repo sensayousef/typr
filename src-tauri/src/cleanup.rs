@@ -1,3 +1,26 @@
+/// Whisper commonly hallucinates these strings on silent or near-silent audio.
+const HALLUCINATIONS: &[&str] = &[
+    "thank you",
+    "thanks",
+    "you",
+    "bye",
+    "bye-bye",
+    "[blank_audio]",
+    "(silent)",
+    "(ambient)",
+    "(music)",
+    "(applause)",
+];
+
+/// Returns `true` if the cleaned, lowercased text is a known Whisper hallucination.
+fn is_hallucination(text: &str) -> bool {
+    let lower = text
+        .to_lowercase()
+        .trim_matches(|c: char| !c.is_alphanumeric())
+        .to_string();
+    HALLUCINATIONS.iter().any(|h| lower == *h)
+}
+
 pub fn cleanup_text(text: &str) -> String {
     let trimmed = text.trim();
     if trimmed.is_empty() {
@@ -31,6 +54,11 @@ pub fn cleanup_text(text: &str) -> String {
         if !matches!(last, '.' | '!' | '?') {
             result.push('.');
         }
+    }
+
+    // Discard known Whisper hallucinations produced on silent audio
+    if is_hallucination(&result) {
+        return String::new();
     }
 
     result

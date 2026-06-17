@@ -9,6 +9,9 @@ pub struct DownloadProgress {
     pub percent: f64,
 }
 
+/// Download a model file from `url` to `dest`.
+/// Uses a temp file and atomic rename so a failed download never leaves a
+/// corrupt partial file at `dest`.
 pub async fn download_model(
     app: AppHandle,
     url: &str,
@@ -27,16 +30,33 @@ pub async fn download_model(
 
     let total = response.content_length().unwrap_or(0);
 
-    // Ensure parent directory exists
     if let Some(parent) = dest.parent() {
         std::fs::create_dir_all(parent).map_err(|e| e.to_string())?;
     }
 
-    let mut file = std::fs::File::create(dest).map_err(|e| e.to_string())?;
-    let mut downloaded: u64 = 0;
+    let temp_path = dest.with_extension("tmp");
+    let result = stream_to_file(&app, response, &temp_path, total).await;
 
-    let mut stream = response.bytes_stream();
+    if let Err(e) = result {
+        let _ = std::fs::remove_file(&temp_path);
+        return Err(e);
+    }
+
+    std::fs::rename(&temp_path, dest)
+        .map_err(|e| format!("Failed to finalize download: {}", e))
+}
+
+async fn stream_to_file(
+    app: &AppHandle,
+    response: reqwest::Response,
+    path: &PathBuf,
+    total: u64,
+) -> Result<(), String> {
     use futures_util::StreamExt;
+
+    let mut file = std::fs::File::create(path).map_err(|e| e.to_string())?;
+    let mut downloaded: u64 = 0;
+    let mut stream = response.bytes_stream();
 
     while let Some(chunk) = stream.next().await {
         let chunk = chunk.map_err(|e| format!("Download stream error: {}", e))?;
@@ -49,11 +69,10 @@ pub async fn download_model(
             0.0
         };
 
-        let _ = app.emit("download-progress", DownloadProgress {
-            downloaded,
-            total,
-            percent,
-        });
+        let _ = app.emit(
+            "download-progress",
+            DownloadProgress { downloaded, total, percent },
+        );
     }
 
     Ok(())

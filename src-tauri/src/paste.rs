@@ -1,3 +1,35 @@
+pub fn capture_selection() -> Result<String, String> {
+    let mut clipboard = arboard::Clipboard::new().map_err(|e| e.to_string())?;
+    let saved = clipboard.get_text().ok();
+
+    #[cfg(target_os = "macos")]
+    {
+        std::process::Command::new("osascript")
+            .args(["-e", r#"tell application "System Events" to keystroke "c" using command down"#])
+            .output()
+            .map_err(|e| format!("Failed to simulate copy: {}", e))?;
+    }
+
+    #[cfg(target_os = "windows")]
+    {
+        use enigo::{Direction, Enigo, Key, Keyboard, Settings};
+        let mut enigo = Enigo::new(&Settings::default()).map_err(|e| e.to_string())?;
+        enigo.key(Key::Control, Direction::Press).map_err(|e| e.to_string())?;
+        enigo.key(Key::Unicode('c'), Direction::Click).map_err(|e| e.to_string())?;
+        enigo.key(Key::Control, Direction::Release).map_err(|e| e.to_string())?;
+    }
+
+    std::thread::sleep(std::time::Duration::from_millis(120));
+
+    let captured = clipboard.get_text().unwrap_or_default();
+
+    if let Some(prev) = saved {
+        let _ = clipboard.set_text(prev);
+    }
+
+    Ok(captured)
+}
+
 pub fn paste_text(text: &str) -> Result<(), String> {
     // Set clipboard (arboard is thread-safe)
     let mut clipboard = arboard::Clipboard::new().map_err(|e| e.to_string())?;
