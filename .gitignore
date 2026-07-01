@@ -29,3 +29,8 @@ target/
 # App-specific
 src-tauri/binaries/
 whisper.cpp/
+
+# Local environment and assistant workflow state
+.env
+.claude/scheduled_tasks.lock
+.claude/sprint-sessions/

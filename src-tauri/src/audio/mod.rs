@@ -89,7 +89,7 @@ impl AudioCapture {
 
         let sample_rate = default_config.sample_rate().0;
         let channels = default_config.channels();
-        println!("[Typr] Mic config: {}Hz, {} channels", sample_rate, channels);
+        println!("[Robin] Mic config: {}Hz, {} channels", sample_rate, channels);
 
         self.sample_rate = sample_rate;
         self.channels = channels;
@@ -123,27 +123,27 @@ impl AudioCapture {
                         on_level((rms * 8.0).min(1.0));
                     }
                 },
-                |err| eprintln!("[Typr] Audio stream error: {}", err),
+                |err| eprintln!("[Robin] Audio stream error: {}", err),
                 None,
             )
             .map_err(|e| e.to_string())?;
 
         stream.play().map_err(|e| e.to_string())?;
         self.stream = Some(SendStream(stream));
-        println!("[Typr] Audio recording started");
+        println!("[Robin] Audio recording started");
         Ok(())
     }
 
     /// Stops the stream and returns the captured audio. Clears the internal buffer.
     pub fn stop(&mut self) -> Result<CapturedAudio, String> {
         self.stream = None; // dropping the stream stops it
-        println!("[Typr] Audio recording stopped");
+        println!("[Robin] Audio recording stopped");
 
         let mut buf = self.buffer.lock().unwrap();
         if buf.is_empty() {
             return Err("No audio captured".to_string());
         }
-        println!("[Typr] Captured {} raw samples", buf.len());
+        println!("[Robin] Captured {} raw samples", buf.len());
 
         let samples = std::mem::take(&mut *buf);
         Ok(CapturedAudio {

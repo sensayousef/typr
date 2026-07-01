@@ -3,7 +3,7 @@ use std::time::{SystemTime, UNIX_EPOCH};
 use tauri::{AppHandle, Emitter, Manager};
 use tauri_plugin_global_shortcut::{GlobalShortcutExt, ShortcutState};
 
-use typr_lib::recording::state::RecordingState;
+use robin_lib::recording::state::RecordingState;
 
 use crate::app_state::AppState;
 use crate::history::HistoryEntry;
@@ -55,7 +55,7 @@ fn save_history(app: &AppHandle, state: &AppState, text: &str, engine: &str) {
 pub fn register_all_hotkeys(app: &AppHandle, dictation: &str, tts: &str) -> Result<(), String> {
     let gs = app.global_shortcut();
     if let Err(e) = gs.unregister_all() {
-        eprintln!("[Typr] Failed to unregister shortcuts: {}", e);
+        eprintln!("[Robin] Failed to unregister shortcuts: {}", e);
     }
 
     let dictation_key = dictation.to_string();
@@ -64,7 +64,7 @@ pub fn register_all_hotkeys(app: &AppHandle, dictation: &str, tts: &str) -> Resu
     let handle_d = app.clone();
     let tts_key_for_dictation = tts_key.clone();
     gs.on_shortcut(dictation, move |_app, shortcut, event| {
-        println!("[Typr] Dictation hotkey: {:?} state={:?}", shortcut, event.state);
+        println!("[Robin] Dictation hotkey: {:?} state={:?}", shortcut, event.state);
         let handle = handle_d.clone();
         let mode = handle
             .state::<AppState>()
@@ -83,7 +83,7 @@ pub fn register_all_hotkeys(app: &AppHandle, dictation: &str, tts: &str) -> Resu
 
     let handle_t = app.clone();
     gs.on_shortcut(tts, move |_app, shortcut, event| {
-        println!("[Typr] TTS hotkey: {:?} state={:?}", shortcut, event.state);
+        println!("[Robin] TTS hotkey: {:?} state={:?}", shortcut, event.state);
         if event.state == ShortcutState::Pressed {
             handle_tts_pressed(handle_t.clone());
         }
@@ -98,15 +98,15 @@ fn handle_pressed(app: AppHandle, mode: String) {
         let state = app.state::<AppState>();
         match mode.as_str() {
             "toggle" => match do_toggle_recording(&app, state.inner()).await {
-                Ok(result) => println!("[Typr] Toggle result: {}", result),
-                Err(e) => eprintln!("[Typr] Toggle error: {}", e),
+                Ok(result) => println!("[Robin] Toggle result: {}", result),
+                Err(e) => eprintln!("[Robin] Toggle error: {}", e),
             },
             "push-to-talk" => {
                 if state.recorder.get_state() == RecordingState::Ready {
                     let mic = state.settings.lock().unwrap().microphone.clone();
                     match state.recorder.start_recording(&app, &mic) {
-                        Ok(_) => println!("[Typr] PTT recording started"),
-                        Err(e) => eprintln!("[Typr] PTT start error: {}", e),
+                        Ok(_) => println!("[Robin] PTT recording started"),
+                        Err(e) => eprintln!("[Robin] PTT start error: {}", e),
                     }
                 }
             }
@@ -129,10 +129,10 @@ fn handle_released(app: AppHandle, mode: String) {
                 .await
             {
                 Ok(result) => {
-                    println!("[Typr] PTT transcription: {}", result);
+                    println!("[Robin] PTT transcription: {}", result);
                     save_history(&app, state.inner(), &result, &settings.engine);
                 }
-                Err(e) => eprintln!("[Typr] PTT transcription error: {}", e),
+                Err(e) => eprintln!("[Robin] PTT transcription error: {}", e),
             }
         }
     });
@@ -141,7 +141,7 @@ fn handle_released(app: AppHandle, mode: String) {
 fn handle_tts_pressed(app: AppHandle) {
     tauri::async_runtime::spawn(async move {
         if let Err(e) = crate::tts::do_toggle_speak(&app).await {
-            eprintln!("[Typr] TTS error: {}", e);
+            eprintln!("[Robin] TTS error: {}", e);
         }
     });
 }

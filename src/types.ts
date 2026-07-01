@@ -12,6 +12,8 @@ export interface Settings {
   ttsVoiceLocal: string;
   ttsVoiceCloud: string;
   ttsRate: number;
+  showConsole: boolean;
+  runInBackground: boolean;
 }
 
 export interface VoiceInfo {

@@ -1,5 +1,6 @@
 import { ipc } from "../ipc.ts";
 import { getSettings, updateSettings } from "../store.ts";
+import { keyEventToTauriShortcut } from "./hotkey-capture.ts";
 
 const TOTAL_STEPS = 5;
 
@@ -19,7 +20,7 @@ function showStep(stepIndex: number): void {
   const skipBtn = el<HTMLButtonElement>("ob-skip");
 
   if (stepIndex === TOTAL_STEPS - 1) {
-    nextBtn.textContent = "Start using Typr";
+    nextBtn.textContent = "Start using Robin";
     skipBtn.classList.add("hidden");
   } else {
     nextBtn.textContent = stepIndex === 0 ? "Get started →" : "Next →";
@@ -62,20 +63,11 @@ function setupHotkeyCapture(): void {
     if (!listening) return;
     e.preventDefault();
 
-    const parts: string[] = [];
-    if (e.ctrlKey) parts.push("Ctrl");
-    if (e.altKey) parts.push("Alt");
-    if (e.shiftKey) parts.push("Shift");
-    if (e.metaKey) parts.push("Meta");
-
-    const key = e.key;
-    if (!["Control", "Alt", "Shift", "Meta"].includes(key)) {
-      parts.push(key.length === 1 ? key.toUpperCase() : key);
-      const combo = parts.join("+");
-      kbd.textContent = combo;
-      btn.classList.remove("listening");
-      listening = false;
-    }
+    const combo = keyEventToTauriShortcut(e);
+    if (!combo) return;
+    kbd.textContent = combo;
+    btn.classList.remove("listening");
+    listening = false;
   });
 }
 

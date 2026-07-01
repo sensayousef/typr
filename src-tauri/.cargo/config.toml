@@ -2,7 +2,7 @@
 # Do not hand-edit version paths here — they are re-discovered each build.
 
 [build]
-target-dir = "C:/Users/sensa/AppData/Roaming/typr-build"
+target-dir = "C:/Users/sensa/AppData/Roaming/robin-build"
 
 [env]
 LIBCLANG_PATH = { value = "C:/Users/sensa/LLVM-18/bin", force = true }

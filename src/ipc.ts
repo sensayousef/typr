@@ -17,6 +17,8 @@ export const ipc = {
   getAutostartEnabled: () => invoke<boolean>("get_autostart_enabled"),
   setAutostart: (enabled: boolean) =>
     invoke<void>("set_autostart", { enabled }),
+  setConsoleVisible: (enabled: boolean) =>
+    invoke<void>("set_console_visible", { enabled }),
   getHistory: () => invoke<HistoryEntry[]>("get_history"),
   clearHistory: () => invoke<void>("clear_history"),
   onHistoryUpdated: (cb: () => void): Promise<UnlistenFn> =>
@@ -45,4 +47,9 @@ export const ipc = {
 
   onSpeakingState: (cb: (state: SpeakingState) => void): Promise<UnlistenFn> =>
     listen<SpeakingState>("speaking-state", (e) => cb(e.payload)),
+
+  convertMarkitdown: (input: string) =>
+    invoke<string>("convert_markitdown", { input }),
+  saveMarkdown: (path: string, content: string) =>
+    invoke<void>("save_markdown", { path, content }),
 };

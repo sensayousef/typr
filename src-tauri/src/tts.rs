@@ -6,7 +6,7 @@ use futures_util::stream::{StreamExt, TryStreamExt};
 use serde::{Deserialize, Serialize};
 use tauri::{AppHandle, Emitter, Manager};
 
-use typr_lib::settings::Settings;
+use robin_lib::settings::Settings;
 
 use crate::tts_groq;
 
@@ -172,7 +172,7 @@ fn run_speech_thread(
     let mut tts_engine = match tts_result {
         Ok(t) => Some(t),
         Err(e) => {
-            eprintln!("[Typr TTS] Failed to initialize TTS engine: {}", e);
+            eprintln!("[Robin TTS] Failed to initialize TTS engine: {}", e);
             None
         }
     };
@@ -182,7 +182,7 @@ fn run_speech_thread(
     let (_stream, stream_handle) = match output {
         Ok(pair) => pair,
         Err(e) => {
-            eprintln!("[Typr TTS] Failed to open audio output: {}", e);
+            eprintln!("[Robin TTS] Failed to open audio output: {}", e);
             for cmd in rx {
                 if let SpeechCmd::ListVoices { reply } = cmd {
                     let _ = reply.send(vec![]);
@@ -222,7 +222,7 @@ fn run_speech_thread(
                                 _ => break,
                             }
                         },
-                        Err(e) => eprintln!("[Typr TTS] Speak error: {}", e),
+                        Err(e) => eprintln!("[Robin TTS] Speak error: {}", e),
                     }
                 }
 
@@ -244,7 +244,7 @@ fn run_speech_thread(
                                     sink.append(source);
                                     queued = true;
                                 }
-                                Err(e) => eprintln!("[Typr TTS] Decode error: {}", e),
+                                Err(e) => eprintln!("[Robin TTS] Decode error: {}", e),
                             }
                         }
 
@@ -272,7 +272,7 @@ fn run_speech_thread(
                             }
                         }
                     }
-                    Err(e) => eprintln!("[Typr TTS] Sink error: {}", e),
+                    Err(e) => eprintln!("[Robin TTS] Sink error: {}", e),
                 }
 
                 speaking.store(false, Ordering::SeqCst);
@@ -314,7 +314,7 @@ pub async fn do_toggle_speak(app: &AppHandle) -> Result<(), String> {
         return Ok(());
     }
 
-    let text = typr_lib::paste::capture_selection()?;
+    let text = robin_lib::paste::capture_selection()?;
     if text.trim().is_empty() {
         return Ok(());
     }

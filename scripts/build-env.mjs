@@ -39,7 +39,7 @@ const MAX_LIBCLANG_MAJOR = 19;
 
 // Cargo target dir is redirected out of Downloads/ because Windows Application
 // Control blocks freshly compiled build-script executables that run from there.
-const TARGET_DIR = toFwd(join(APPDATA, "typr-build"));
+const TARGET_DIR = toFwd(join(APPDATA, "robin-build"));
 
 function toFwd(p) {
   return p.replace(/\\/g, "/");

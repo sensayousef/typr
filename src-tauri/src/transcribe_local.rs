@@ -56,11 +56,11 @@ fn run_whisper(model_path: &PathBuf, audio_path: &PathBuf) -> Result<String, Str
     for i in 0..n_segments {
         match state.full_get_segment_text(i) {
             Ok(seg) => text.push_str(&seg),
-            Err(e) => eprintln!("[Typr] Warning: segment {i} error: {e}"),
+            Err(e) => eprintln!("[Robin] Warning: segment {i} error: {e}"),
         }
     }
 
-    println!("[Typr] Whisper output: {}", text.trim());
+    println!("[Robin] Whisper output: {}", text.trim());
     Ok(text.trim().to_string())
 }
 

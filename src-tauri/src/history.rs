@@ -69,7 +69,7 @@ mod tests {
 
     #[test]
     fn push_prepends_newest_first() {
-        let dir = temp_dir().join("typr_test_history");
+        let dir = temp_dir().join("robin_test_history");
         let _ = fs::remove_dir_all(&dir);
         fs::create_dir_all(&dir).unwrap();
 
@@ -84,7 +84,7 @@ mod tests {
 
     #[test]
     fn caps_at_max_entries() {
-        let dir = temp_dir().join("typr_test_history_cap");
+        let dir = temp_dir().join("robin_test_history_cap");
         let _ = fs::remove_dir_all(&dir);
         fs::create_dir_all(&dir).unwrap();
 
@@ -98,7 +98,7 @@ mod tests {
 
     #[test]
     fn clear_empties_list() {
-        let dir = temp_dir().join("typr_test_history_clear");
+        let dir = temp_dir().join("robin_test_history_clear");
         let _ = fs::remove_dir_all(&dir);
         fs::create_dir_all(&dir).unwrap();
 

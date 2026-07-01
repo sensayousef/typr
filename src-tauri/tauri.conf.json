@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Typr",
+  "productName": "Robin",
   "version": "0.1.0",
-  "identifier": "com.typr.app",
+  "identifier": "com.robin.app",
   "build": {
     "beforeDevCommand": "npm run dev",
     "devUrl": "http://localhost:9174",
@@ -13,7 +13,7 @@
     "withGlobalTauri": true,
     "windows": [
       {
-        "title": "Typr",
+        "title": "Robin",
         "width": 900,
         "height": 600,
         "minWidth": 700,

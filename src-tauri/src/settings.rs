@@ -31,6 +31,14 @@ pub struct Settings {
     pub tts_voice_cloud: String,
     #[serde(rename = "ttsRate", default = "default_tts_rate")]
     pub tts_rate: u32,
+    /// When true, a debug console window is attached at launch so the user can
+    /// watch diagnostics. Off by default — the app runs headless.
+    #[serde(rename = "showConsole", default)]
+    pub show_console: bool,
+    /// When true, closing the settings window keeps Robin alive in the tray for
+    /// hotkeys and quick access. Off by default so Close fully exits the app.
+    #[serde(rename = "runInBackground", default)]
+    pub run_in_background: bool,
 }
 
 fn default_tts_engine() -> String {
@@ -61,6 +69,8 @@ impl Default for Settings {
             tts_voice_local: String::new(),
             tts_voice_cloud: String::new(),
             tts_rate: default_tts_rate(),
+            show_console: false,
+            run_in_background: false,
         }
     }
 }
@@ -115,6 +125,8 @@ mod tests {
         assert_eq!(settings.tts_voice_local, "");
         assert_eq!(settings.tts_voice_cloud, "");
         assert_eq!(settings.tts_rate, 175);
+        assert!(!settings.show_console);
+        assert!(!settings.run_in_background);
     }
 
     #[test]
@@ -132,7 +144,7 @@ mod tests {
 
     #[test]
     fn test_save_and_load() {
-        let dir = temp_dir().join("typr_test_settings");
+        let dir = temp_dir().join("robin_test_settings");
         let _ = fs::remove_dir_all(&dir);
 
         let mut settings = Settings::default();
@@ -150,7 +162,7 @@ mod tests {
 
     #[test]
     fn test_load_missing_file_returns_default() {
-        let dir = temp_dir().join("typr_test_missing");
+        let dir = temp_dir().join("robin_test_missing");
         let _ = fs::remove_dir_all(&dir);
         let settings = Settings::load(&dir);
         assert_eq!(settings, Settings::default());
@@ -158,7 +170,7 @@ mod tests {
 
     #[test]
     fn test_load_corrupt_json_returns_default() {
-        let dir = temp_dir().join("typr_test_corrupt");
+        let dir = temp_dir().join("robin_test_corrupt");
         let _ = fs::remove_dir_all(&dir);
         fs::create_dir_all(&dir).unwrap();
         fs::write(dir.join("config.json"), "not json").unwrap();

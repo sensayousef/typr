@@ -1,8 +1,8 @@
 use std::path::PathBuf;
 use std::sync::Mutex;
 
-use typr_lib::recording::Recorder;
-use typr_lib::settings::Settings;
+use robin_lib::recording::Recorder;
+use robin_lib::settings::Settings;
 
 use crate::history::History;
 

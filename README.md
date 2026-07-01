@@ -1,7 +1,9 @@
-# Tauri + Vanilla TS
+# Robin
 
-This template should help get you started developing with Tauri in vanilla HTML, CSS and Typescript.
+Robin is a local Tauri sidekick for using AI faster from your desktop. It focuses on voice-first workflows: record with a global hotkey, transcribe speech, clean it up, and place the result where you are already working.
 
-## Recommended IDE Setup
+## Development
 
-- [VS Code](https://code.visualstudio.com/) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
+- `npm run tauri dev` starts the development app.
+- `npm run app:build` builds the desktop app.
+- `npm run app` launches the built app without keeping a terminal attached.

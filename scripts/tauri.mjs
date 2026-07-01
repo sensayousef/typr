@@ -13,12 +13,12 @@ try {
   const { env, wrote } = applyBuildEnv();
   if (wrote) {
     console.log(
-      `[typr] build env: libclang ${env._detail.libclang.version}, ` +
+      `[robin] build env: libclang ${env._detail.libclang.version}, ` +
         `Windows SDK ${env._detail.sdk.version} -> updated .cargo/config.toml`,
     );
   }
 } catch (err) {
-  console.error("\n[typr] Build environment setup failed:\n  " + err.message + "\n");
+  console.error("\n[robin] Build environment setup failed:\n  " + err.message + "\n");
   process.exit(1);
 }
 

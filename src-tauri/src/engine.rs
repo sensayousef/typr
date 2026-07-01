@@ -73,10 +73,10 @@ mod tests {
     #[test]
     fn local_engine_uses_correct_model_path() {
         let settings = make_settings("local");
-        let app_dir = Path::new("/tmp/typr");
+        let app_dir = Path::new("/tmp/robin");
         let e = Engine::from_settings(&settings, app_dir);
         if let Engine::Local { model_path } = e {
-            assert_eq!(model_path, PathBuf::from("/tmp/typr/ggml-small.bin"));
+            assert_eq!(model_path, PathBuf::from("/tmp/robin/ggml-small.bin"));
         } else {
             panic!("expected Local engine");
         }

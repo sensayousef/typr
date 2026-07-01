@@ -371,7 +371,8 @@ body {
 /* ── Form Controls ──────────────────────────────────── */
 
 select,
-input[type="password"] {
+input[type="password"],
+input[type="text"] {
   width: 100%;
   max-width: 280px;
   padding: 7px 12px;
@@ -396,12 +397,14 @@ select {
 }
 
 select:focus,
-input[type="password"]:focus {
+input[type="password"]:focus,
+input[type="text"]:focus {
   border-color: var(--accent);
   box-shadow: 0 0 0 2px var(--accent-subtle);
 }
 
-input[type="password"]::placeholder {
+input[type="password"]::placeholder,
+input[type="text"]::placeholder {
   color: var(--text-tertiary);
 }
 
@@ -570,6 +573,44 @@ kbd {
   color: var(--accent);
   background: var(--accent-subtle);
   animation: hotkey-pulse 1s ease-in-out infinite;
+}
+
+.hotkey-control {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  width: 100%;
+}
+
+.hotkey-control .hotkey-input {
+  display: inline-block;
+  width: calc(var(--hotkey-input-ch, 8ch) + 26px);
+  min-width: calc(2ch + 26px);
+  max-width: 180px;
+  height: 26px;
+  padding: 5px 12px;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  color: var(--text-secondary);
+  text-align: center;
+  font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+  font-size: 12px;
+  line-height: normal;
+  letter-spacing: 0.02em;
+  text-transform: none;
+}
+
+.hotkey-control .hotkey-input:hover {
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+.hotkey-control .hotkey-input:focus {
+  border-color: var(--accent);
+  color: var(--text);
+  box-shadow: 0 0 0 2px var(--accent-subtle);
 }
 
 @keyframes hotkey-pulse {
@@ -1047,4 +1088,178 @@ kbd {
   white-space: nowrap;
   min-width: 60px;
   text-align: right;
+}
+
+/* ── To Markdown ────────────────────────────────────── */
+
+.md-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+}
+
+.md-step {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.md-step-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 5px;
+  background: var(--accent-subtle);
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.md-step-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.md-dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  margin-top: 12px;
+  padding: 26px 16px;
+  background: var(--bg);
+  border: 1.5px dashed var(--border-strong);
+  border-radius: var(--radius-lg);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: border-color var(--transition), background var(--transition), color var(--transition);
+}
+
+.md-dropzone:hover {
+  border-color: var(--accent);
+  color: var(--text);
+  background: var(--surface-hover);
+}
+
+.md-dropzone-title {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.md-dropzone-hint {
+  font-size: 11px;
+  color: var(--text-tertiary);
+}
+
+.md-or {
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-tertiary);
+  margin: 14px 0 10px;
+}
+
+.md-url-row {
+  display: flex;
+}
+
+.md-url-input {
+  flex: 1;
+  padding: 9px 12px;
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  font-family: var(--font);
+  font-size: 12px;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.md-url-input::placeholder {
+  color: var(--text-tertiary);
+}
+
+.md-url-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-subtle);
+}
+
+.md-selected {
+  margin-top: 12px;
+  font-size: 12px;
+  color: var(--green);
+  word-break: break-all;
+}
+
+.md-convert {
+  width: 100%;
+  margin-top: 16px;
+  padding: 10px;
+  font-size: 13px;
+}
+
+.md-note {
+  margin-top: 14px;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--text-tertiary);
+}
+
+.md-note strong {
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.md-result {
+  margin-top: 20px;
+}
+
+.md-result-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.md-result-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* Copy/Save are non-destructive: override the red ghost hover. */
+.md-result-actions .btn-ghost:hover {
+  color: var(--text);
+  border-color: var(--accent);
+}
+
+.md-output {
+  width: 100%;
+  min-height: 280px;
+  padding: 14px;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.6;
+  resize: vertical;
+}
+
+.md-output:focus {
+  outline: none;
+  border-color: var(--border-strong);
+}
+
+.md-status {
+  margin-top: 12px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  min-height: 16px;
 }

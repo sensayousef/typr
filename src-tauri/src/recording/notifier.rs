@@ -26,9 +26,9 @@ impl StateNotifier for TauriNotifier {
         }
 
         let tooltip = match state {
-            RecordingState::Ready => "Typr",
-            RecordingState::Recording => "Typr — Recording...",
-            RecordingState::Transcribing => "Typr — Transcribing...",
+            RecordingState::Ready => "Robin",
+            RecordingState::Recording => "Robin — Recording...",
+            RecordingState::Transcribing => "Robin — Transcribing...",
         };
         if let Some(tray) = self.app.tray_by_id("main") {
             let _ = tray.set_tooltip(Some(tooltip));

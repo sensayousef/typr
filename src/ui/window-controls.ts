@@ -23,7 +23,7 @@ export function initWindowControls(): void {
     await syncMaximizeIcon();
   });
 
-  // Close is intercepted in main.rs and hides to tray instead of quitting.
+  // Close behavior is controlled by the persisted run-in-background setting.
   closeBtn.addEventListener("click", () => {
     void appWindow.close();
   });

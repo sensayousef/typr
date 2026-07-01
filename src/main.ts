@@ -8,9 +8,11 @@ import { initMicPanel } from "./ui/mic-panel.ts";
 import { initModePanel } from "./ui/mode-panel.ts";
 import { initHotkeyCapture } from "./ui/hotkey-capture.ts";
 import { initStartupPanel } from "./ui/startup-panel.ts";
+import { initConsolePanel } from "./ui/console-panel.ts";
 import { initHistoryPanel } from "./ui/history-panel.ts";
 import { initOnboarding } from "./ui/onboarding.ts";
 import { initTtsPanel } from "./ui/tts-panel.ts";
+import { initMarkitdownPanel } from "./ui/markitdown-panel.ts";
 
 async function init(): Promise<void> {
   // Settings must load before any UI module calls getSettings().
@@ -21,6 +23,8 @@ async function init(): Promise<void> {
   initWindowControls();
   initModePanel();
   initHotkeyCapture();
+  initConsolePanel();
+  initMarkitdownPanel();
 
   await Promise.all([
     initStatus(),

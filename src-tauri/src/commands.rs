@@ -1,7 +1,7 @@
 use tauri::{AppHandle, State};
 use tauri_plugin_autostart::ManagerExt;
 
-use typr_lib::{audio, downloader, recording::state::RecordingState, settings::Settings, transcribe_local};
+use robin_lib::{audio, downloader, recording::state::RecordingState, settings::Settings, transcribe_local};
 
 use crate::app_state::AppState;
 use crate::history::HistoryEntry;
@@ -66,14 +66,32 @@ pub fn clear_history(state: State<AppState>) {
 
 #[tauri::command]
 pub fn get_autostart_enabled(app: AppHandle) -> bool {
+    if cfg!(debug_assertions) {
+        return false;
+    }
+
     app.autolaunch().is_enabled().unwrap_or(false)
 }
 
 #[tauri::command]
 pub fn set_autostart(app: AppHandle, enabled: bool) -> Result<(), String> {
+    if cfg!(debug_assertions) && enabled {
+        return Err(
+            "Launch on startup is only available from a built Robin app. Run `npm run app:build`, then launch Robin with `npm run app`.".into(),
+        );
+    }
+
     if enabled {
         app.autolaunch().enable().map_err(|e| e.to_string())
     } else {
         app.autolaunch().disable().map_err(|e| e.to_string())
     }
+}
+
+/// Show or hide the debug console immediately. Persistence of the preference
+/// flows through the normal `save_settings` path (the frontend updates the
+/// `showConsole` setting alongside this call).
+#[tauri::command]
+pub fn set_console_visible(enabled: bool) {
+    crate::console::set_visible(enabled);
 }

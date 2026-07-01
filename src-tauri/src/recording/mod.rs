@@ -85,7 +85,7 @@ impl Recorder {
         let duration_secs = resampled.len() as f32 / 16_000.0;
         let rms = dsp::compute_rms(&resampled);
         if duration_secs < 0.3 || rms < 0.002 {
-            println!("[Typr] Skipping transcription: duration={:.2}s rms={:.4}", duration_secs, rms);
+            println!("[Robin] Skipping transcription: duration={:.2}s rms={:.4}", duration_secs, rms);
             let _ = app.emit("transcription-done", serde_json::json!({ "text": "", "error": null }));
             return Ok(String::new());
         }
